@@ -3,18 +3,21 @@ import telebot
 from telebot import types
 import random
 import time
+import cowsay
 
 while True:
     try:
-        print('Bot started...')
+        cowsay.cow('Bot started...')
         bot = telebot.TeleBot('6104388060:AAGuE2Kcqh49lzl-qyYPdofFrdsOK8htv0g')
 
         # Создание клавиатур
-        kb = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
         kb_timing = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         kb_exit = types.ReplyKeyboardMarkup(resize_keyboard=True)
         kb_random = types.ReplyKeyboardMarkup(resize_keyboard=True)
         kb_random_timing = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb_other = types.InlineKeyboardMarkup()
+        kb_other_ch = types.InlineKeyboardMarkup()
 
         # Создание кнопок
         games = types.InlineKeyboardButton(text='Случайная игра 🎰')
@@ -24,13 +27,16 @@ while True:
         middle = types.InlineKeyboardButton(text='Средняя 🚶')
         longest = types.InlineKeyboardButton(text='Долгая 🧑‍🦽')
         exit = types.InlineKeyboardButton(text='Вернуться в начало 🔙')
+        other = types.InlineKeyboardButton(text="Меняй🔄", callback_data='other')
+        other_ch = types.InlineKeyboardButton(text="Сменить🔄", callback_data='other_ch')
 
-        kb.add(games, members, timing)
-        kb_timing.add(fast, middle, longest)
+        kb.add(games, timing)
+        kb_timing.add(fast, middle, longest, members)
         kb_random.add(games)
         kb_random_timing.add(members, games)
         kb_exit.add(exit)
-
+        kb_other.add(other)
+        kb_other_ch.add(other_ch)
 
         games = [
             ["Гарри Поттер", 1, 5, "Долгая 🧑‍🦽"],
@@ -39,7 +45,36 @@ while True:
             ['Exit', 1, 99, 'Долгая 🧑‍🦽'],
             ['Клаустрофобия', 1, 99, 'Долгая 🧑‍🦽'],
             ['Дженга', 1, 99, 'Средняя 🚶'],
-            ['Побег из психушки', 1, 99, 'Долгая 🧑‍🦽']
+            ['Побег из психушки', 1, 99, 'Долгая 🧑‍🦽'],
+            ["Карточные войны", 2, 2, "Средняя 🚶"],
+            ["Запретный остров", 2, 4, "Средняя 🚶"],
+            ["Колонизаторы", 2, 4, "Средняя 🚶"],
+            ["Челюсти", 2, 4, "Средняя 🚶"],
+            ["Шакал", 2, 4, "Долгая 🧑‍🦽"],
+            ["Эволюция. Случайные мутации", 2, 4, "Средняя 🚶"],
+            ["Каркассон", 2, 5, "Долгая 🧑‍🦽"],
+            ["Рик и морти. Всмортить всё", 2, 5, "Средняя 🚶"],
+            ["Монополия", 2, 6, "Долгая 🧑‍🦽"],
+            ["Эпичные схватки боевых магов", 2, 6, "Долгая 🧑‍🦽"],
+            ["Цитадели", 2, 7, "Средняя 🚶"],
+            ["Зельеварение", 2, 8, "Долгая 🧑‍🦽"],
+            ["Эволюция", 2, 8, "Долгая 🧑‍🦽"],
+            ["Свинтус 2.0", 2, 10, "Быстрая 🏃"],
+            ["Свинтус. Злоключения", 2, 10, "Быстрая 🏃"],
+            ["Свинтус мини", 2, 10, "Быстрая 🏃"],
+            ["Соображарий", 2, 10, "Средняя 🚶"],
+            ["Суперсоображарий", 2, 10, "Средняя 🚶"],
+            ["Манчкин. Ктулху", 3, 6, "Средняя 🚶"],
+            ["Манчкин. Гравити Фолз", 3, 6, "Средняя 🚶"],
+            ["Хугермугер", 3, 10, "Средняя 🚶"],
+            ["Крокодил", 3, 16, "Средняя 🚶"],
+            ["За бортом", 4, 6, "Долгая 🧑‍🦽"],
+            ["Диксит", 4, 7, "Долгая 🧑‍🦽"],
+            ["Имаджинариум", 4, 7, "Долгая 🧑‍🦽"],
+            ["Страдающее средневековье", 4, 9, "Долгая 🧑‍🦽"],
+            ["Нечто", 4, 12, "Средняя 🚶"],
+            ["Alias", 4, 98, "Средняя 🚶"],
+            ["Мафия", 6, 16, "Средняя 🚶"]
         ]
 
 
@@ -56,12 +91,17 @@ while True:
 
 
         # Функция вывода игры по продолжительности и игрокам
-        def get_game_time(value, players=None):
+        def get_game_time(value, players):
             ch_games = []
+            print('error1')
             for game in games:
+                print(game, 'jhjhj')
                 if game[3] == value:
-                    if (players is None) or (game[1] <= players <= game[2]):
+                    print(value)
+                    if int(game[1]) <= int(players) <= int(game[2]):
                         ch_games.append(game)
+                        print('error1')
+            print(ch_games)
             if len(ch_games) > 0:
                 return random.choice(ch_games)
             else:
@@ -76,12 +116,22 @@ while True:
                                               f'\nС помощью кнопок клавиатуры сделай свой выбор!', reply_markup=kb)
 
 
+        @bot.callback_query_handler(func=lambda call: call.data == 'other')
+        def other_game(call):
+            game = random.choice(games)
+            game_pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
+            bot.send_photo(call.message.chat.id, game_pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
+            bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+
+
         # Обработчик кнопки Случайная игра
         @bot.message_handler(func=lambda message: message.text == 'Случайная игра 🎰')
         def random_game(message):
             game = random.choice(games)
-            bot.send_message(message.chat.id, f'Твоя случайная игра: <u>{game[0]}</u>', parse_mode='html',
+            game_pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
+            bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                              reply_markup=kb_exit)
+            bot.send_photo(message.chat.id, game_pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
 
 
         # Обработчик кнопки Продолжительность игры
@@ -92,7 +142,8 @@ while True:
                                               f'\n<u>Небольшая памятка</u>:'
                                               f'\n<b>Быстрая 🏃</b> - до 30 минут;'
                                               f'\n<b>Средняя 🚶</b> - от 30 до 60 минут;'
-                                              f'\n<b>Долгая 🧑‍🦽</b> от 60 минут', parse_mode='html',
+                                              f'\n<b>Долгая 🧑‍🦽</b> от 60 минут\n'
+                                              f'\nЛибо можешь нажать на количество игроков!', parse_mode='html',
                              reply_markup=kb_timing)
             bot.register_next_step_handler(message, time_game)
 
@@ -106,6 +157,10 @@ while True:
                                f'Введи количество игроков или можешь выбрать случайную игру',
                                reply_markup=kb_random_timing)
                 bot.register_next_step_handler(message, lambda msg: duration_players_input(msg, value))
+            elif message.text == 'Количество игроков 👨‍👩‍👧‍👦':
+                ph_pl = open('img/players.jpeg', 'rb')
+                bot.send_photo(message.chat.id, ph_pl, 'Введи количество игроков:')
+                bot.register_next_step_handler(message, lambda msg: get_members(msg, ))
             else:
                 bot.send_message(message.chat.id,
                                  'Что-то пошло не так. Попробуй ещё раз, либо можешь вернуться в начало',
@@ -116,23 +171,35 @@ while True:
         def duration_players_input(message, value):
             if message.text == 'Случайная игра 🎰':
                 game = get_game_time(value)
-                if isinstance(game, list):
-                    bot.send_message(message.chat.id, f'Твоя игра: <u>{game[0]}</u>', parse_mode='html',
+                print(game, '2')
+                game_pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
+                if game is not None:
+                    bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                                      reply_markup=kb_exit)
+                    bot.send_photo(message.chat.id, game_pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
                 else:
-                    bot.send_message(message.chat.id, 'Игру не удалось подобрать, Вам очень грустно.',
+                    pepe = open('img/pepe.jpg', 'rb')
+                    bot.send_photo(message.chat.id, pepe, 'Игру не удалось подобрать.',
                                      reply_markup=kb_exit)
             else:
                 try:
                     players = int(message.text.strip())
                     if players > 0:
                         game = get_game_time(value, players)
+                        print(game, '1')
+                        print(f'{game[0]}.jpg')
+                        game_pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
                         if game is not None:
-                            bot.send_message(message.chat.id, f'Вот твоя игра: <u>{game[0]}</u>', parse_mode='html',
+
+                            print(game, '3')
+                            bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                                              reply_markup=kb_exit)
+                            bot.send_photo(message.chat.id, game_pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
                         else:
-                            bot.send_message(message.chat.id, 'Игру не удалось подобрать, Вам очень грустно.',
-                                             reply_markup=kb_exit)
+                            pepe = open('img/pepe.jpg', 'rb')
+                            bot.send_photo(message.chat.id, pepe, 'Игру не удалось подобрать.',
+                                           reply_markup=kb_exit)
+
                 except ValueError:
                     ph_pl = open('img/players.jpeg', 'rb')
                     bot.send_photo(message.chat.id, ph_pl, 'Введи количество игроков:')
@@ -151,10 +218,15 @@ while True:
             players = int(message.text)
             game_ch = get_game(players)
             if game_ch:
-                bot.send_message(message.chat.id, f'Твоя игра: <u>{game_ch}</u>', parse_mode='html',
+                game_pic = open(f'game_pictures/{game_ch}.jpg', 'rb')
+                bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                                  reply_markup=kb_exit)
+                bot.send_photo(message.chat.id, game_pic, f'<u>{game_ch}</u>', parse_mode='html', reply_markup=kb_other)
             else:
-                bot.send_message(message.chat.id, 'Болты, игра не найдена.', reply_markup=kb_exit)
+                pepe = open('img/pepe.jpg', 'rb')
+                bot.send_photo(message.chat.id, pepe, 'Игру не удалось подобрать.',
+                                     reply_markup=kb_exit)
+
 
 
         # Возврат в начало
