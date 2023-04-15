@@ -187,14 +187,12 @@ while True:
                     if players > 0:
                         game = get_game_time(value, players)
                         print(game, '1')
-                        print(f'{game[0]}.jpg')
-                        game_pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
                         if game is not None:
-
+                            pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
                             print(game, '3')
                             bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                                              reply_markup=kb_exit)
-                            bot.send_photo(message.chat.id, game_pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
+                            bot.send_photo(message.chat.id, pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other)
                         else:
                             pepe = open('img/pepe.jpg', 'rb')
                             bot.send_photo(message.chat.id, pepe, 'Игру не удалось подобрать.',
