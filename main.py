@@ -40,7 +40,7 @@ while True:
         kb_exit.add(exit)
         kb_other.add(other)
         kb_other_m.add(other_m)
-        kb_other_time.add(kb_other_time)
+        kb_other_time.add(other_time)
 
         games = [
             ["Гарри Поттер", 1, 5, "Долгая 🧑‍🦽"],
@@ -85,7 +85,7 @@ while True:
 
         # Функция вывода игры по игрокам
         def get_game(players):
-            ch_games = []
+            global ch_games
             for game in games:
                 if game[1] <= int(players) <= game[2]:
                     ch_games.append(game[0])
@@ -96,7 +96,7 @@ while True:
 
         # Функция вывода игры по продолжительности и игрокам
         def get_game_time(value, players):
-            ch_games = []
+            global ch_games
             for game in games:
                 if game[3] == value:
                     if int(game[1]) <= int(players) <= int(game[2]):
@@ -132,8 +132,8 @@ while True:
                 bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
             elif call.data == 'other_game_time':
                 game = random.choice(result)
-                pic = open(f'game_pictures/{game}.jpg', 'rb')
-                bot.send_photo(call.message.chat.id, pic, f'<u>{game}</u>', parse_mode='html',
+                pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
+                bot.send_photo(call.message.chat.id, pic, f'<u>{game[0]}</u>', parse_mode='html',
                                reply_markup=kb_other_time)
                 bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
 
@@ -200,20 +200,19 @@ while True:
                     players = int(message.text.strip())
                     if players > 0:
                         game = get_game_time(value, players)
-                        if game is not None:
-                            pic = open(f'game_pictures/{game[0]}.jpg', 'rb')
+                        if game:
+                            picture = open(f'game_pictures/{game[0]}.jpg', 'rb')
                             bot.send_message(message.chat.id, 'Твоя игра: ', parse_mode='html',
                                              reply_markup=kb_exit)
-                            bot.send_photo(message.chat.id, pic, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other_time)
+                            bot.send_photo(message.chat.id, picture, f'<u>{game[0]}</u>', parse_mode='html', reply_markup=kb_other_time)
                         else:
                             pepe = open('img/pepe.jpg', 'rb')
                             bot.send_photo(message.chat.id, pepe, 'Игру не удалось подобрать.',
                                            reply_markup=kb_exit)
-
                 except ValueError:
                     ph_pl = open('img/players.jpeg', 'rb')
                     bot.send_photo(message.chat.id, ph_pl, 'Введи количество игроков:')
-                    bot.register_next_step_handler(message, lambda msg: duration_players_input(msg, value))
+                    bot.register_next_step_handler(message, lambda msg: get_members(msg))
 
 
         # Обработчик кнопки Количество игроков
